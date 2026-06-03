@@ -1,8 +1,12 @@
 import streamlit as st
 from config import nome_programa, versao_programa
 from services.autenticacao import AutenticacaoService
+from database.schema import inicializar_banco 
 
+inicializar_banco()
 autenticacao = AutenticacaoService()
+
+
 st.set_page_config(
     page_title="ReqFlow 1.0.0",
     page_icon="🎯",

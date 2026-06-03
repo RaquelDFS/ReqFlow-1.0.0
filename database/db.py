@@ -1,60 +1,27 @@
+import sqlite3
 from models.usuario import Usuario
-
-_usuarios: list[Usuario] = [
-    Usuario(
-            id=1,
-            nome="Raquel",
-            email="raquel@reqflow.com", 
-            senha="1234", 
-            cargo="analista",     
-            status=True
-            ),
-
-    Usuario(
-            id=2,
-            nome="Nicole",     
-            email="nicole@reqflow.com",  
-            senha="1234", 
-            cargo="gerente",      
-            status=True,
-            ),
-    Usuario(
-            id=3,
-            nome="Marina",
-            email="marina@reqflow.com",
-            senha="1234",
-            cargo="cliente",
-            status=True
-            ),
-    Usuario(
-            id=4,
-            nome="Thiago",
-            email="thiago@reqflow.com",
-            senha="1234",
-            cargo="desenvolvedor",
-            status=True
-            ),
-    Usuario(
-            id=5,
-            nome="Eduarda",
-            email="eduarda@reqflow.com",
-            senha="1234",
-            cargo="testador",
-            status=True
-            ),
-    Usuario(   
-            id=6,
-            nome="Matehus",
-            email="matheus@reqflow.com",
-            senha="1234",
-            cargo="analista",
-            status=False
-            )
-]
+from database.schema import CAMINHO_BANCO
 
 
 def buscar_usuario_por_email(email: str) -> Usuario | None:
-    for usuario in _usuarios:
-        if usuario.email == email:
-            return usuario
-    return None
+    conexao = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conexao.cursor()
+
+    cursor.execute(
+        "SELECT id, nome, email, senha, cargo, status FROM usuarios WHERE email = ?",
+        (email,)
+    )
+    linha = cursor.fetchone()
+    conexao.close()
+
+    if linha is None:
+        return None
+
+    return Usuario(
+        id=linha[0],
+        nome=linha[1],
+        email=linha[2],
+        senha=linha[3],
+        cargo=linha[4],
+        status=bool(linha[5]) 
+    )
