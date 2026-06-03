@@ -1,7 +1,8 @@
 import streamlit as st
 from config import nome_programa, versao_programa
-from database.db import buscar_usuario_por_email
+from services.autenticacao import AutenticacaoService
 
+autenticacao = AutenticacaoService()
 st.set_page_config(
     page_title="ReqFlow 1.0.0",
     page_icon="🎯",
@@ -18,23 +19,18 @@ def tela_login():
 
     email = st.text_input("E-mail")
     senha = st.text_input("Senha", type="password")
-
+    
     if st.button("Entrar"):
-        usuario = buscar_usuario_por_email(email)
-
-        if usuario is None:
-            st.error("E-mail não encontrado.")
-        elif not usuario.status:
-            st.error("Usuário inativo. Contate o administrador.")
-        elif usuario.senha != senha:
-            st.error("Senha incorreta.")
+        resultado = autenticacao.fazer_login(email, senha)
+        if resultado.sucesso:
+            st.session_state.usuario_logado = resultado.usuario
+            st.rerun()
         else:
-            st.session_state.usuario_logado = usuario
-            st.rerun()  
+            st.error(resultado.mensagem)
 
 def tela_home(usuario):
     st.title(f"Olá, {usuario.nome}!")
-    st.markdown(f"**{usuario.cargo}**.")
+    st.markdown(f"**`{usuario.cargo}`**")
     st.info("Dashboard")
 
     if st.button("Sair"):
