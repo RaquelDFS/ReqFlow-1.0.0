@@ -1,0 +1,3 @@
+Pra fazer o print no usuario: colocar como método na classe usuario 
+    def __repr__(self):
+        return f"Usuario(id={self.id}, nome='{self.nome}', cargo='{self.cargo}', status={self.status})"
